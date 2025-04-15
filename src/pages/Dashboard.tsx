@@ -38,7 +38,7 @@ const Dashboard = () => {
         />
         <StatCard 
           title="Monthly Income" 
-          value={`$${getTotalRentCollected().toLocaleString()}`} 
+          value={`KSh ${getTotalRentCollected().toLocaleString()}`} 
           icon={DollarSign} 
           description="Total rent collected"
           trend="up"

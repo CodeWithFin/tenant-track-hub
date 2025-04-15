@@ -49,7 +49,7 @@ const RecentPaymentsTable = ({ payments }: RecentPaymentsTableProps) => {
                 </TableCell>
                 <TableCell>{property?.name || 'Unknown'}</TableCell>
                 <TableCell>{format(new Date(payment.date), 'MMM dd, yyyy')}</TableCell>
-                <TableCell>${payment.amount.toLocaleString()}</TableCell>
+                <TableCell>KSh {payment.amount.toLocaleString()}</TableCell>
                 <TableCell>{getPaymentMethodBadge(payment.method)}</TableCell>
               </TableRow>
             );
