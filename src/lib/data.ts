@@ -1,44 +1,43 @@
-
 import { Property, Tenant, Payment, MaintenanceRequest } from "@/types";
 import { v4 as uuidv4 } from 'uuid';
 
-// Mock Properties Data
+// Mock Properties Data with Kenyan locations
 export const properties: Property[] = [
   {
     id: "prop-001",
-    name: "Riverside Apartments",
-    address: "123 Riverside Drive, Westlands, Nairobi",
+    name: "Kilimani Residences",
+    address: "123 Ngong Road, Kilimani, Nairobi",
     type: "Apartment Building",
     units: 8,
     imageUrl: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=2835&ixlib=rb-4.0.3",
   },
   {
     id: "prop-002",
-    name: "Garden Villas",
-    address: "456 Garden Road, Karen, Nairobi",
+    name: "Karen Gardens",
+    address: "456 Marula Lane, Karen, Nairobi",
     type: "Townhouses",
     units: 4,
     imageUrl: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=2970&ixlib=rb-4.0.3",
   },
   {
     id: "prop-003",
-    name: "City View Complex",
-    address: "789 Ngong Road, Kilimani, Nairobi",
+    name: "Mombasa Coastal Complex",
+    address: "789 Nyali Road, Nyali, Mombasa",
     type: "Commercial Building",
     units: 6,
     imageUrl: "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&q=80&w=2970&ixlib=rb-4.0.3",
   },
   {
     id: "prop-004",
-    name: "Sunset Homes",
-    address: "101 Beach Road, Nyali, Mombasa",
+    name: "Eldoret Skyline Homes",
+    address: "101 Uganda Road, Eldoret, Uasin Gishu",
     type: "Single Family Homes",
     units: 3,
     imageUrl: "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?auto=format&fit=crop&q=80&w=2970&ixlib=rb-4.0.3",
   },
 ];
 
-// Mock Tenants Data
+// Mock Tenants Data with realistic Kenyan rent amounts
 export const tenants: Tenant[] = [
   {
     id: "ten-001",
@@ -50,20 +49,20 @@ export const tenants: Tenant[] = [
     unitNumber: "101",
     leaseStart: "2023-01-01",
     leaseEnd: "2024-01-01",
-    rentAmount: 45000,
+    rentAmount: 75000, // Updated rent amount in KSh
     status: "active",
   },
   {
     id: "ten-002",
     firstName: "Jane",
-    lastName: "Wanjiku",
-    email: "jane.wanjiku@example.com",
+    lastName: "Wanjiru",
+    email: "jane.wanjiru@example.com",
     phone: "+254-733-987-654",
     propertyId: "prop-001",
     unitNumber: "102",
     leaseStart: "2023-02-15",
     leaseEnd: "2024-02-15",
-    rentAmount: 48000,
+    rentAmount: 85000, // Updated rent amount in KSh
     status: "active",
   },
   {

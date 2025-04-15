@@ -71,7 +71,7 @@ const Tenants = () => {
                       {format(new Date(tenant.leaseEnd), 'MMM dd, yyyy')}
                     </div>
                   </TableCell>
-                  <TableCell>${tenant.rentAmount}/mo</TableCell>
+                  <TableCell>KSh {tenant.rentAmount.toLocaleString()}/mo</TableCell>
                   <TableCell>
                     {tenant.status === 'active' ? (
                       <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
