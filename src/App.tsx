@@ -10,6 +10,7 @@ import Properties from "./pages/Properties";
 import Tenants from "./pages/Tenants";
 import Payments from "./pages/Payments";
 import Maintenance from "./pages/Maintenance";
+import Receipts from "./pages/Receipts";  // New import
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 
@@ -46,6 +47,11 @@ const App = () => (
           <Route path="/maintenance" element={
             <AppLayout>
               <Maintenance />
+            </AppLayout>
+          } />
+          <Route path="/receipts" element={  // New route
+            <AppLayout>
+              <Receipts />
             </AppLayout>
           } />
           <Route path="*" element={<NotFound />} />
