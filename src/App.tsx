@@ -10,7 +10,8 @@ import Properties from "./pages/Properties";
 import Tenants from "./pages/Tenants";
 import Payments from "./pages/Payments";
 import Maintenance from "./pages/Maintenance";
-import Receipts from "./pages/Receipts";  // New import
+import Receipts from "./pages/Receipts";
+import Reports from "./pages/Reports";  // New import
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 
@@ -49,9 +50,14 @@ const App = () => (
               <Maintenance />
             </AppLayout>
           } />
-          <Route path="/receipts" element={  // New route
+          <Route path="/receipts" element={
             <AppLayout>
               <Receipts />
+            </AppLayout>
+          } />
+          <Route path="/reports" element={
+            <AppLayout>
+              <Reports />
             </AppLayout>
           } />
           <Route path="*" element={<NotFound />} />
