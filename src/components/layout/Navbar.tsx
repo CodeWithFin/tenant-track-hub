@@ -1,9 +1,18 @@
 
-import { User, Bell, Settings } from "lucide-react";
+import { User, Bell, Settings, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
 
 const Navbar = () => {
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    toast.success("Logged out successfully");
+  };
+
   return (
     <div className="border-b bg-background sticky top-0 z-10">
       <div className="flex items-center justify-between h-16 px-6">
@@ -20,6 +29,12 @@ const Navbar = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
+              <div className="px-2 py-1.5 text-sm font-medium">
+                {user?.name || 'User'}
+              </div>
+              <div className="px-2 py-1.5 text-xs text-muted-foreground">
+                {user?.email || 'user@example.com'}
+              </div>
               <DropdownMenuItem className="py-2">
                 <User className="mr-2 h-4 w-4" />
                 <span>My Profile</span>
@@ -28,7 +43,8 @@ const Navbar = () => {
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="py-2 text-destructive">
+              <DropdownMenuItem className="py-2 text-destructive" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
                 <span>Logout</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
