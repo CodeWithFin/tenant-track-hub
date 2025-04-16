@@ -84,7 +84,24 @@ export const getActiveTenantsCount = (): number => {
 };
 
 export const addTenant = (tenant: Omit<Tenant, 'id'>): Tenant => {
-  const newTenant = { ...tenant, id: `ten-${uuidv4().substr(0, 8)}` };
+  const newTenant = { ...tenant, id: `ten-${uuidv4().substring(0, 8)}` };
   tenants.push(newTenant);
   return newTenant;
+};
+
+export const updateTenant = (updatedTenant: Tenant): Tenant => {
+  const index = tenants.findIndex(tenant => tenant.id === updatedTenant.id);
+  if (index !== -1) {
+    tenants[index] = updatedTenant;
+  }
+  return updatedTenant;
+};
+
+export const deleteTenant = (id: string): boolean => {
+  const index = tenants.findIndex(tenant => tenant.id === id);
+  if (index !== -1) {
+    tenants.splice(index, 1);
+    return true;
+  }
+  return false;
 };
