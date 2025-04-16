@@ -62,12 +62,14 @@ const TenantFormDialog = ({
 
   const handleSubmit = (values: TenantFormValues) => {
     if (tenant) {
+      // When updating an existing tenant, include the ID
       onSubmit({
         ...values,
         id: tenant.id,
-      });
+      } as Tenant); // Use type assertion to ensure it matches Tenant type
     } else {
-      onSubmit(values);
+      // When creating a new tenant, all fields are required so it matches Omit<Tenant, 'id'>
+      onSubmit(values as Omit<Tenant, 'id'>);
     }
   };
 
