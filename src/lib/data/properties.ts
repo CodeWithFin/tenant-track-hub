@@ -47,3 +47,25 @@ export const addProperty = (property: Omit<Property, 'id'>): Property => {
   properties.push(newProperty);
   return newProperty;
 };
+
+export const updateProperty = (updatedProperty: Property): Property => {
+  const index = properties.findIndex(p => p.id === updatedProperty.id);
+  
+  if (index !== -1) {
+    properties[index] = updatedProperty;
+    return updatedProperty;
+  }
+  
+  throw new Error(`Property with ID ${updatedProperty.id} not found`);
+};
+
+export const deleteProperty = (id: string): boolean => {
+  const initialLength = properties.length;
+  const newPropertiesList = properties.filter(property => property.id !== id);
+  
+  // Update the properties array by reference (important for our mock data approach)
+  properties.length = 0;
+  properties.push(...newPropertiesList);
+  
+  return properties.length < initialLength;
+};

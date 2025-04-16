@@ -10,6 +10,7 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import AppLayout from "./components/layout/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Properties from "./pages/Properties";
+import PropertyDetail from "./pages/PropertyDetail";
 import Tenants from "./pages/Tenants";
 import Payments from "./pages/Payments";
 import Maintenance from "./pages/Maintenance";
@@ -42,6 +43,13 @@ const App = () => (
                 <ProtectedRoute>
                   <AppLayout>
                     <Properties />
+                  </AppLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/properties/:id" element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <PropertyDetail />
                   </AppLayout>
                 </ProtectedRoute>
               } />

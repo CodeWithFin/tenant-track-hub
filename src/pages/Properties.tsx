@@ -1,20 +1,28 @@
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Search } from "lucide-react";
 import PropertyCard from "@/components/dashboard/PropertyCard";
 import { properties } from "@/lib/data";
-import { useState } from "react";
+import { Property } from "@/types";
+import PropertyFormDialog from "@/components/property/PropertyFormDialog";
 
 const Properties = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [propertiesList, setPropertiesList] = useState<Property[]>(properties);
   
-  const filteredProperties = properties.filter(
+  const filteredProperties = propertiesList.filter(
     (property) => 
       property.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       property.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
       property.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handlePropertyAdded = (property: Property) => {
+    setPropertiesList([...propertiesList, property]);
+  };
 
   return (
     <div className="space-y-6">
@@ -23,7 +31,7 @@ const Properties = () => {
           <h1 className="text-2xl font-bold tracking-tight">Properties</h1>
           <p className="text-muted-foreground">Manage your properties and units.</p>
         </div>
-        <Button>
+        <Button onClick={() => setIsAddDialogOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Add Property
         </Button>
@@ -50,6 +58,13 @@ const Properties = () => {
           </div>
         )}
       </div>
+
+      {/* Add Property Dialog */}
+      <PropertyFormDialog
+        open={isAddDialogOpen}
+        onOpenChange={setIsAddDialogOpen}
+        onPropertyAdded={handlePropertyAdded}
+      />
     </div>
   );
 };
