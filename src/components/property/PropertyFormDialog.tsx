@@ -83,7 +83,17 @@ const PropertyFormDialog = ({
         onPropertyUpdated?.(updatedProperty);
       } else {
         // For adding, use the addProperty function
-        const newProperty = addProperty(data);
+        // Ensure all required fields are present with their correct types
+        const newPropertyData: Omit<Property, "id"> = {
+          name: data.name,
+          address: data.address,
+          type: data.type,
+          units: data.units,
+          // Only include imageUrl if it exists
+          ...(data.imageUrl ? { imageUrl: data.imageUrl } : {})
+        };
+        
+        const newProperty = addProperty(newPropertyData);
         toast.success("Property added successfully");
         onPropertyAdded?.(newProperty);
       }
