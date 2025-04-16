@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -18,6 +19,8 @@ const Navbar = () => {
       <div className="flex items-center justify-between h-16 px-6">
         <div className="flex-1"></div>
         <div className="flex items-center gap-3">
+          <ThemeToggle />
+          
           <Button variant="ghost" size="icon" className="text-muted-foreground">
             <Bell className="h-5 w-5" />
           </Button>
