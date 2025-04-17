@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Property } from "@/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Building2, MapPin, Home, MoreVertical } from "lucide-react";
+import { Building2, MapPin, Home, MoreVertical, CalendarClock } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   DropdownMenu,
@@ -13,18 +13,27 @@ import {
 } from "@/components/ui/dropdown-menu";
 import PropertyFormDialog from "@/components/property/PropertyFormDialog";
 import DeleteConfirmDialog from "@/components/shared/DeleteConfirmDialog";
-import { deleteProperty } from "@/lib/data";
+import { deleteProperty, updateProperty } from "@/lib/data";
 import { toast } from "sonner";
 
 interface PropertyCardProps {
   property: Property;
   onDeleted?: () => void;
+  onUpdated?: (property: Property) => void;
 }
 
-const PropertyCard = ({ property, onDeleted }: PropertyCardProps) => {
+const PropertyCard = ({ property, onDeleted, onUpdated }: PropertyCardProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [currentProperty, setCurrentProperty] = useState<Property>(property);
+
+  const handlePropertyUpdated = (updatedProperty: Property) => {
+    setCurrentProperty(updatedProperty);
+    if (onUpdated) {
+      onUpdated(updatedProperty);
+    }
+  };
 
   const handleDelete = () => {
     setIsDeleting(true);
@@ -52,28 +61,28 @@ const PropertyCard = ({ property, onDeleted }: PropertyCardProps) => {
 
   return (
     <>
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-all border-gray-100">
         <div 
           className="h-40 w-full bg-cover bg-center" 
           style={{ 
-            backgroundImage: property.imageUrl 
-              ? `url(${property.imageUrl})` 
+            backgroundImage: currentProperty.imageUrl 
+              ? `url(${currentProperty.imageUrl})` 
               : "url('https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&q=80&w=2970')" 
           }}
         />
         <CardHeader className="pb-2">
           <div className="flex justify-between items-start">
-            <CardTitle className="text-lg font-semibold">{property.name}</CardTitle>
+            <CardTitle className="text-lg font-semibold">{currentProperty.name}</CardTitle>
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="flex items-center gap-1">
+              <Badge variant="outline" className="flex items-center gap-1 rounded-full">
                 <Home className="h-3 w-3" />
-                {property.units} units
+                {currentProperty.units} units
               </Badge>
               <DropdownMenu>
                 <DropdownMenuTrigger className="focus:outline-none" aria-label="Property options">
                   <MoreVertical className="h-4 w-4 text-muted-foreground" />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="rounded-xl border-gray-100">
                   <DropdownMenuItem onSelect={() => setIsEditDialogOpen(true)}>
                     Edit
                   </DropdownMenuItem>
@@ -90,17 +99,23 @@ const PropertyCard = ({ property, onDeleted }: PropertyCardProps) => {
         </CardHeader>
         <CardContent className="pb-2">
           <div className="flex items-center text-sm text-muted-foreground mb-2">
-            <Building2 className="h-4 w-4 mr-1" />
-            {property.type}
+            <Building2 className="h-4 w-4 mr-1 text-primary" />
+            {currentProperty.type}
           </div>
-          <div className="flex items-center text-sm text-muted-foreground">
-            <MapPin className="h-4 w-4 mr-1" />
-            {property.address}
+          <div className="flex items-center text-sm text-muted-foreground mb-2">
+            <MapPin className="h-4 w-4 mr-1 text-primary" />
+            {currentProperty.address}
           </div>
+          {currentProperty.yearBuilt && (
+            <div className="flex items-center text-sm text-muted-foreground">
+              <CalendarClock className="h-4 w-4 mr-1 text-primary" />
+              Built {currentProperty.yearBuilt}
+            </div>
+          )}
         </CardContent>
         <CardFooter className="pt-2">
           <Link 
-            to={`/properties/${property.id}`} 
+            to={`/properties/${currentProperty.id}`} 
             className="text-sm text-primary hover:underline"
           >
             View Details
@@ -111,11 +126,16 @@ const PropertyCard = ({ property, onDeleted }: PropertyCardProps) => {
       <PropertyFormDialog
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
-        property={property}
-        onPropertyUpdated={() => {
-          toast.success("Property updated successfully");
-          // Force page refresh as a simple solution
-          window.location.reload();
+        property={currentProperty}
+        onPropertyUpdated={(updatedProperty) => {
+          try {
+            updateProperty(updatedProperty);
+            handlePropertyUpdated(updatedProperty);
+            toast.success("Property updated successfully");
+          } catch (error) {
+            toast.error("Failed to update property");
+            console.error(error);
+          }
         }}
       />
 

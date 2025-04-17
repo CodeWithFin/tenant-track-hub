@@ -70,3 +70,12 @@ export interface Receipt {
   receiptNumber: string;
   downloadUrl?: string;
 }
+
+// Extended badge variants for different statuses
+export type BadgeVariant = 
+  | 'default'
+  | 'secondary'
+  | 'destructive'
+  | 'outline'
+  | 'success'  // Added for active status
+  | 'warning'; // Added for pending status

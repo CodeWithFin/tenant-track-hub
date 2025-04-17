@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Property } from "@/types";
-import { addProperty } from "@/lib/data";
+import { addProperty, updateProperty } from "@/lib/data";
 import { toast } from "sonner";
 import { 
   Dialog, 
@@ -35,19 +35,21 @@ const PropertyFormDialog = ({
     setIsSubmitting(true);
     try {
       if (isEditing && property) {
-        // For editing, we'd normally call an update API
-        // Since we're using mock data, we're just showing how this would work
+        // For editing an existing property
         const updatedProperty = {
           ...property,
           ...data,
         };
         
-        // In a real app, you'd call an update API here
-        // For now, just simulate an update with toast
+        // Update the property in our data store
+        const result = updateProperty(updatedProperty);
+        
         toast.success("Property updated successfully");
-        onPropertyUpdated?.(updatedProperty);
+        if (onPropertyUpdated) {
+          onPropertyUpdated(result);
+        }
       } else {
-        // For adding, use the addProperty function
+        // For adding a new property
         // Ensure all required fields are present with their correct types
         const newPropertyData: Omit<Property, "id"> = {
           name: data.name,
@@ -63,7 +65,9 @@ const PropertyFormDialog = ({
         
         const newProperty = addProperty(newPropertyData);
         toast.success("Property added successfully");
-        onPropertyAdded?.(newProperty);
+        if (onPropertyAdded) {
+          onPropertyAdded(newProperty);
+        }
       }
       onOpenChange(false);
     } catch (error) {
@@ -80,7 +84,7 @@ const PropertyFormDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[525px]">
+      <DialogContent className="sm:max-w-[525px] rounded-2xl border-gray-100 shadow-lg">
         <DialogHeader>
           <DialogTitle>{isEditing ? "Edit Property" : "Add New Property"}</DialogTitle>
           <DialogDescription>

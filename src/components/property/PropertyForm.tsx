@@ -10,8 +10,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 
@@ -39,6 +41,9 @@ const PropertyForm = ({
       type: property?.type || "",
       units: property?.units || 1,
       imageUrl: property?.imageUrl || "",
+      description: property?.description || "",
+      yearBuilt: property?.yearBuilt || undefined,
+      amenities: property?.amenities || "",
     },
   });
 
@@ -52,7 +57,7 @@ const PropertyForm = ({
             <FormItem>
               <FormLabel>Property Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter property name" {...field} />
+                <Input placeholder="Enter property name" className="rounded-lg" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -65,7 +70,7 @@ const PropertyForm = ({
             <FormItem>
               <FormLabel>Address</FormLabel>
               <FormControl>
-                <Input placeholder="123 Main St, City, Country" {...field} />
+                <Input placeholder="123 Main St, City, Country" className="rounded-lg" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -78,7 +83,7 @@ const PropertyForm = ({
             <FormItem>
               <FormLabel>Property Type</FormLabel>
               <FormControl>
-                <Input placeholder="Apartment, House, Commercial, etc." {...field} />
+                <Input placeholder="Apartment, House, Commercial, etc." className="rounded-lg" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -95,7 +100,31 @@ const PropertyForm = ({
                   type="number" 
                   min="1"
                   placeholder="Number of units" 
+                  className="rounded-lg"
                   {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="yearBuilt"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Year Built (Optional)</FormLabel>
+              <FormControl>
+                <Input 
+                  type="number" 
+                  placeholder="e.g. 2010" 
+                  className="rounded-lg"
+                  {...field}
+                  value={field.value || ''}
+                  onChange={(e) => {
+                    const value = e.target.value === '' ? undefined : parseInt(e.target.value);
+                    field.onChange(value);
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -109,8 +138,46 @@ const PropertyForm = ({
             <FormItem>
               <FormLabel>Image URL (Optional)</FormLabel>
               <FormControl>
-                <Input placeholder="https://example.com/image.jpg" {...field} />
+                <Input placeholder="https://example.com/image.jpg" className="rounded-lg" {...field} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description (Optional)</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Describe the property..." 
+                  className="resize-none rounded-lg" 
+                  rows={3}
+                  {...field} 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="amenities"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Amenities (Optional)</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="WiFi, Parking, Swimming Pool, etc." 
+                  className="rounded-lg"
+                  {...field} 
+                />
+              </FormControl>
+              <FormDescription>
+                Separate multiple amenities with commas
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -120,10 +187,11 @@ const PropertyForm = ({
             type="button" 
             variant="outline" 
             onClick={onCancel}
+            className="rounded-full"
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting} className="rounded-full">
             {isSubmitting ? "Saving..." : isEditing ? "Update Property" : "Add Property"}
           </Button>
         </DialogFooter>
