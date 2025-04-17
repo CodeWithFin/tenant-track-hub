@@ -21,7 +21,7 @@ import {
   SidebarTrigger, 
   SidebarFooter 
 } from "@/components/ui/sidebar";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const menuItems = [
   { title: "Dashboard", icon: Home, path: "/dashboard" },
@@ -34,13 +34,15 @@ const menuItems = [
 ];
 
 const AppSidebar = () => {
+  const location = useLocation();
+  
   return (
     <Sidebar>
       <SidebarHeader className="border-b border-sidebar-border py-4">
         <div className="flex items-center px-5">
           <div className="text-primary font-bold text-xl">TenantTrackHub</div>
           <SidebarTrigger className="ml-auto">
-            <button className="p-2 rounded-md text-sidebar-foreground hover:bg-sidebar-accent transition-colors">
+            <button className="p-2 rounded-full text-sidebar-foreground hover:bg-sidebar-accent transition-colors">
               <span className="sr-only">Toggle Sidebar</span>
             </button>
           </SidebarTrigger>
@@ -48,19 +50,29 @@ const AppSidebar = () => {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Management</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs uppercase tracking-wider">Management</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link to={item.path} className="flex items-center gap-3">
-                      <item.icon className="w-5 h-5" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {menuItems.map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <Link 
+                        to={item.path} 
+                        className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-colors ${
+                          isActive 
+                            ? "bg-primary/10 text-primary" 
+                            : "hover:bg-sidebar-accent/50"
+                        }`}
+                      >
+                        <item.icon className={`w-5 h-5 ${isActive ? "text-primary" : ""}`} />
+                        <span className="font-medium">{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

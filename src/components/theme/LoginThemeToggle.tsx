@@ -12,7 +12,7 @@ export function LoginThemeToggle() {
       size="icon"
       onClick={toggleTheme}
       aria-label="Toggle theme"
-      className="absolute top-4 right-4 text-muted-foreground"
+      className="absolute top-4 right-4 text-muted-foreground rounded-full"
     >
       {theme === "light" ? (
         <Moon className="h-5 w-5" />
