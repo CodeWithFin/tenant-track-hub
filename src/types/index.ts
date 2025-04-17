@@ -6,6 +6,9 @@ export interface Property {
   type: string;
   units: number;
   imageUrl?: string;
+  description?: string;
+  yearBuilt?: number;
+  amenities?: string;
 }
 
 export interface Tenant {

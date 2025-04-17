@@ -54,8 +54,11 @@ const PropertyFormDialog = ({
           address: data.address,
           type: data.type,
           units: data.units,
-          // Only include imageUrl if it exists
-          ...(data.imageUrl ? { imageUrl: data.imageUrl } : {})
+          // Only include optional fields if they exist
+          ...(data.imageUrl ? { imageUrl: data.imageUrl } : {}),
+          ...(data.description ? { description: data.description } : {}),
+          ...(data.yearBuilt ? { yearBuilt: data.yearBuilt } : {}),
+          ...(data.amenities ? { amenities: data.amenities } : {})
         };
         
         const newProperty = addProperty(newPropertyData);
