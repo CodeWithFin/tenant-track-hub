@@ -138,7 +138,7 @@ const Payments = () => {
                     {tenant ? `${tenant.firstName} ${tenant.lastName}` : 'Unknown'}
                   </TableCell>
                   <TableCell>{property?.name || 'Unknown'}</TableCell>
-                  <TableCell>KSh {payment.amount.toLocaleString()}</TableCell>
+                  <TableCell className="font-medium">KSh {payment.amount.toLocaleString()}</TableCell>
                   <TableCell>{getPaymentMethodBadge(payment.method)}</TableCell>
                   <TableCell>{payment.notes || '-'}</TableCell>
                   <TableCell className="text-right">

@@ -247,7 +247,7 @@ const Receipts = () => {
               <TableRow key={receipt.id}>
                 <TableCell>{receipt.receiptNumber}</TableCell>
                 <TableCell>{receipt.tenantName}</TableCell>
-                <TableCell>KSh {receipt.amount.toLocaleString()}</TableCell>
+                <TableCell className="font-medium">KSh {receipt.amount.toLocaleString()}</TableCell>
                 <TableCell>{format(new Date(receipt.date), 'MMM dd, yyyy')}</TableCell>
                 <TableCell className="text-right">
                   <Button 

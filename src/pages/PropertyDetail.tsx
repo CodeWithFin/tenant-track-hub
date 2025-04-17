@@ -216,14 +216,14 @@ const PropertyDetail = () => {
                           </TableCell>
                           <TableCell>{tenant.unitNumber}</TableCell>
                           <TableCell>
-                            <Badge variant={tenant.status === 'active' ? 'success' : tenant.status === 'pending' ? 'warning' : 'destructive'} className="rounded-full px-2 py-0.5">
+                            <Badge variant={tenant.status === 'active' ? 'success' : tenant.status === 'pending' ? 'warning' : 'destructive'}>
                               {tenant.status}
                             </Badge>
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center">
                               <DollarSign className="h-3.5 w-3.5 text-muted-foreground mr-1" />
-                              {tenant.rentAmount.toLocaleString()}
+                              KSh {tenant.rentAmount.toLocaleString()}
                             </div>
                           </TableCell>
                           <TableCell>
