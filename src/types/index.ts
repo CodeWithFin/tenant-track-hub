@@ -22,7 +22,20 @@ export interface Tenant {
   leaseStart: string;
   leaseEnd: string;
   rentAmount: number;
-  status: 'active' | 'inactive';
+  status: 'active' | 'inactive' | 'pending';
+  balance?: number;
+  notes?: string;
+  documents?: TenantDocument[];
+  lastPaymentDate?: string;
+}
+
+export interface TenantDocument {
+  id: string;
+  tenantId: string;
+  name: string;
+  type: 'lease' | 'id' | 'other';
+  uploadDate: string;
+  fileUrl?: string;
 }
 
 export interface Payment {

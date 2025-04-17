@@ -1,5 +1,5 @@
 
-import { Tenant } from "@/types";
+import { Tenant, TenantDocument } from "@/types";
 import { v4 as uuidv4 } from 'uuid';
 
 // Mock Tenants Data with realistic Kenyan rent amounts
@@ -16,6 +16,18 @@ export const tenants: Tenant[] = [
     leaseEnd: "2024-01-01",
     rentAmount: 75000, 
     status: "active",
+    balance: 0,
+    lastPaymentDate: "2023-12-01",
+    notes: "Good tenant, always pays on time.",
+    documents: [
+      {
+        id: "doc-001",
+        tenantId: "ten-001",
+        name: "Lease Agreement",
+        type: "lease",
+        uploadDate: "2022-12-15"
+      }
+    ]
   },
   {
     id: "ten-002",
@@ -29,6 +41,18 @@ export const tenants: Tenant[] = [
     leaseEnd: "2024-02-15",
     rentAmount: 85000,
     status: "active",
+    balance: 85000,
+    lastPaymentDate: "2023-11-10",
+    notes: "Late payment in November",
+    documents: [
+      {
+        id: "doc-002",
+        tenantId: "ten-002",
+        name: "Lease Agreement",
+        type: "lease",
+        uploadDate: "2023-02-10"
+      }
+    ]
   },
   {
     id: "ten-003",
@@ -42,6 +66,9 @@ export const tenants: Tenant[] = [
     leaseEnd: "2024-03-01",
     rentAmount: 65000,
     status: "active",
+    balance: 0,
+    lastPaymentDate: "2023-12-01",
+    notes: "Has requested maintenance for bathroom sink"
   },
   {
     id: "ten-004",
@@ -55,6 +82,9 @@ export const tenants: Tenant[] = [
     leaseEnd: "2023-10-01",
     rentAmount: 68000,
     status: "inactive",
+    balance: 0,
+    lastPaymentDate: "2023-09-28",
+    notes: "Moved out at end of lease term"
   },
   {
     id: "ten-005",
@@ -68,7 +98,24 @@ export const tenants: Tenant[] = [
     leaseEnd: "2024-05-15",
     rentAmount: 75000,
     status: "active",
+    balance: 18750,
+    lastPaymentDate: "2023-12-01",
+    notes: "Partial payment in December"
   },
+  {
+    id: "ten-006",
+    firstName: "Mary",
+    lastName: "Njeri",
+    email: "mary.njeri@example.com",
+    phone: "+254-733-123-789",
+    propertyId: "prop-003",
+    unitNumber: "302",
+    leaseStart: "2024-01-01",
+    leaseEnd: "2025-01-01",
+    rentAmount: 78000,
+    status: "pending",
+    notes: "Lease starts January 1st, deposit received"
+  }
 ];
 
 export const getTenantById = (id: string): Tenant | undefined => {
@@ -81,6 +128,14 @@ export const getTenantsForProperty = (propertyId: string): Tenant[] => {
 
 export const getActiveTenantsCount = (): number => {
   return tenants.filter(tenant => tenant.status === 'active').length;
+};
+
+export const getTenantsByStatus = (status: Tenant['status']): Tenant[] => {
+  return tenants.filter(tenant => tenant.status === status);
+};
+
+export const getTenantsWithBalance = (): Tenant[] => {
+  return tenants.filter(tenant => (tenant.balance || 0) > 0);
 };
 
 export const addTenant = (tenant: Omit<Tenant, 'id'>): Tenant => {
@@ -104,4 +159,32 @@ export const deleteTenant = (id: string): boolean => {
     return true;
   }
   return false;
+};
+
+export const addTenantDocument = (tenantId: string, document: Omit<TenantDocument, 'id' | 'tenantId'>): TenantDocument | null => {
+  const tenant = getTenantById(tenantId);
+  if (!tenant) return null;
+  
+  const newDocument = {
+    ...document,
+    id: `doc-${uuidv4().substring(0, 8)}`,
+    tenantId
+  };
+  
+  if (!tenant.documents) {
+    tenant.documents = [];
+  }
+  
+  tenant.documents.push(newDocument);
+  return newDocument;
+};
+
+export const removeTenantDocument = (tenantId: string, documentId: string): boolean => {
+  const tenant = getTenantById(tenantId);
+  if (!tenant || !tenant.documents) return false;
+  
+  const initialLength = tenant.documents.length;
+  tenant.documents = tenant.documents.filter(doc => doc.id !== documentId);
+  
+  return tenant.documents.length < initialLength;
 };
