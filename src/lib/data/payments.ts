@@ -12,6 +12,8 @@ export const payments: Payment[] = [
     date: "2023-08-01",
     method: "bank transfer",
     notes: "August rent",
+    bankName: "KCB Bank",
+    accountNumber: "1234567890",
   },
   {
     id: "pay-002",
@@ -19,8 +21,9 @@ export const payments: Payment[] = [
     propertyId: "prop-001",
     amount: 45000,
     date: "2023-09-02",
-    method: "bank transfer",
+    method: "m-pesa",
     notes: "September rent",
+    referenceNumber: "QWE123456",
   },
   {
     id: "pay-003",
@@ -28,8 +31,9 @@ export const payments: Payment[] = [
     propertyId: "prop-001",
     amount: 48000,
     date: "2023-09-01",
-    method: "m-pesa",
+    method: "credit card",
     notes: "September rent",
+    referenceNumber: "CC789012",
   },
   {
     id: "pay-004",
@@ -46,8 +50,9 @@ export const payments: Payment[] = [
     propertyId: "prop-003",
     amount: 75000,
     date: "2023-09-03",
-    method: "bank transfer",
+    method: "paypal",
     notes: "September rent",
+    referenceNumber: "PP456789",
   },
 ];
 

@@ -1,4 +1,3 @@
-
 export interface Property {
   id: string;
   name: string;
@@ -44,9 +43,12 @@ export interface Payment {
   propertyId: string;
   amount: number;
   date: string;
-  method: 'cash' | 'm-pesa' | 'bank transfer' | 'check' | 'other';
+  method: 'cash' | 'm-pesa' | 'bank transfer' | 'check' | 'paypal' | 'credit card' | 'debit card' | 'other';
   receiptId?: string;
   notes?: string;
+  referenceNumber?: string;
+  accountNumber?: string;
+  bankName?: string;
 }
 
 export interface MaintenanceRequest {
