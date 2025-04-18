@@ -1,6 +1,6 @@
 
 
-## Project info
+## Project info.
 
 
 
