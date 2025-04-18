@@ -4,6 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { DatePicker } from "@/components/ui/date-picker";
+import { 
   BarChart, 
   Bar, 
   XAxis, 
@@ -14,44 +23,71 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell
+  Cell,
+  LineChart,
+  Line
 } from "recharts";
 import { 
   Download, 
   BarChart3, 
   PieChart as PieChartIcon, 
-  Calendar 
+  Calendar, 
+  FileText,
+  FilePlus2,
+  Table as TableIcon
 } from "lucide-react";
-import { properties, tenants, payments, getVacancyRate, getTotalRentCollected } from "@/lib/data";
+import { 
+  properties, 
+  tenants, 
+  payments, 
+  getVacancyRate, 
+  getTotalRentCollected 
+} from "@/lib/data";
+import { PaymentMethodBadge } from "@/components/payments/PaymentMethodBadge";
+import { 
+  PAYMENT_METHODS, 
+  calculateTotalsByMethod,
+  calculateMonthlyRevenue,
+  generatePaymentsCsvData
+} from "@/lib/utils/paymentUtils";
+import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
+import Papa from 'papaparse';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 // Chart colors
-const COLORS = ['#8884d8', '#83a6ed', '#8dd1e1', '#82ca9d', '#a4de6c'];
+const COLORS = ['#8884d8', '#83a6ed', '#8dd1e1', '#82ca9d', '#a4de6c', '#ffc658', '#ff8042'];
 
-// Prepare data for the monthly revenue chart
-const getMonthlyRevenue = () => {
-  const months = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-  ];
-  
-  const monthlyData = months.map(month => ({
-    name: month,
-    amount: 0
-  }));
-  
-  // Group payments by month
-  payments.forEach(payment => {
-    const date = new Date(payment.date);
-    const monthIndex = date.getMonth();
-    monthlyData[monthIndex].amount += payment.amount;
-  });
-  
-  return monthlyData;
+// Create a function to download data as CSV
+const downloadCsv = (data: any[], filename: string) => {
+  const csv = Papa.unparse(data);
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', filename);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
 
-// Prepare data for property occupancy chart
-const getPropertyOccupancy = () => {
-  return properties.map(property => {
+// Create a function to download data as PDF
+const downloadPdf = () => {
+  // In a real app, you would use a library like jsPDF to generate PDFs
+  alert('PDF generation would be implemented with a library like jsPDF');
+};
+
+const Reports = () => {
+  const [activeTab, setActiveTab] = useState("revenue");
+  const [timeRange, setTimeRange] = useState("6months");
+  const [startDate, setStartDate] = useState(subMonths(new Date(), 6));
+  const [endDate, setEndDate] = useState(new Date());
+  
+  // Prepare data for the monthly revenue chart
+  const monthlyRevenue = calculateMonthlyRevenue(payments);
+  
+  // Prepare data for property occupancy chart
+  const propertyOccupancy = properties.map(property => {
     const totalUnits = property.units;
     const occupiedUnits = tenants.filter(
       tenant => tenant.propertyId === property.id && tenant.status === 'active'
@@ -63,34 +99,25 @@ const getPropertyOccupancy = () => {
       vacant: totalUnits - occupiedUnits
     };
   });
-};
-
-// Prepare data for payment method distribution
-const getPaymentMethodDistribution = () => {
-  const methodCounts: Record<string, number> = {};
   
-  payments.forEach(payment => {
-    if (!methodCounts[payment.method]) {
-      methodCounts[payment.method] = 0;
-    }
-    methodCounts[payment.method]++;
-  });
-  
-  return Object.entries(methodCounts).map(([name, value]) => ({
+  // Prepare data for payment method distribution
+  const paymentMethodTotals = calculateTotalsByMethod(payments);
+  const paymentMethods = Object.entries(paymentMethodTotals).map(([name, value]) => ({
     name: name.charAt(0).toUpperCase() + name.slice(1).replace('-', ' '), // Capitalize and format
     value
   }));
-};
-
-const Reports = () => {
-  const [activeTab, setActiveTab] = useState("revenue");
   
-  const monthlyRevenue = getMonthlyRevenue();
-  const propertyOccupancy = getPropertyOccupancy();
-  const paymentMethods = getPaymentMethodDistribution();
-  
+  // Calculate key financial metrics
   const totalRentCollected = getTotalRentCollected();
   const vacancyRate = getVacancyRate();
+  const averagePaymentAmount = payments.length > 0 
+    ? payments.reduce((sum, payment) => sum + payment.amount, 0) / payments.length 
+    : 0;
+  
+  const handleExportCsv = () => {
+    const csvData = generatePaymentsCsvData(payments, tenants, properties);
+    downloadCsv(csvData, `payments-report-${format(new Date(), 'yyyy-MM-dd')}.csv`);
+  };
   
   return (
     <div className="space-y-6">
@@ -101,13 +128,19 @@ const Reports = () => {
             View analytics and generate reports for your properties.
           </p>
         </div>
-        <Button>
-          <Download className="h-4 w-4 mr-2" />
-          Export Report
-        </Button>
+        <div className="flex space-x-2">
+          <Button variant="outline" onClick={handleExportCsv}>
+            <FileText className="h-4 w-4 mr-2" />
+            Export CSV
+          </Button>
+          <Button onClick={downloadPdf}>
+            <Download className="h-4 w-4 mr-2" />
+            Export PDF
+          </Button>
+        </div>
       </div>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -135,14 +168,62 @@ const Reports = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Properties
+              Average Payment
             </CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{properties.length}</div>
+            <div className="text-2xl font-bold">KSh {averagePaymentAmount.toLocaleString()}</div>
           </CardContent>
         </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Total Payments
+            </CardTitle>
+            <FilePlus2 className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{payments.length}</div>
+          </CardContent>
+        </Card>
+      </div>
+      
+      <div className="space-y-4">
+        <div className="flex flex-col md:flex-row gap-4 md:items-end">
+          <div className="grid gap-1.5">
+            <Label htmlFor="time-range">Time Range</Label>
+            <Select value={timeRange} onValueChange={setTimeRange}>
+              <SelectTrigger id="time-range" className="w-[180px]">
+                <SelectValue placeholder="Select time range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="3months">Last 3 Months</SelectItem>
+                <SelectItem value="6months">Last 6 Months</SelectItem>
+                <SelectItem value="12months">Last 12 Months</SelectItem>
+                <SelectItem value="custom">Custom Range</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          {timeRange === 'custom' && (
+            <>
+              <div className="grid gap-1.5">
+                <Label>Start Date</Label>
+                <DatePicker date={startDate} setDate={setStartDate} />
+              </div>
+              <div className="grid gap-1.5">
+                <Label>End Date</Label>
+                <DatePicker date={endDate} setDate={setEndDate} />
+              </div>
+            </>
+          )}
+          
+          <Button className="md:mb-0" variant="secondary">
+            Apply Filters
+          </Button>
+        </div>
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
@@ -150,6 +231,7 @@ const Reports = () => {
           <TabsTrigger value="revenue">Revenue</TabsTrigger>
           <TabsTrigger value="occupancy">Occupancy</TabsTrigger>
           <TabsTrigger value="payments">Payment Methods</TabsTrigger>
+          <TabsTrigger value="details">Payment Details</TabsTrigger>
         </TabsList>
         
         <TabsContent value="revenue" className="space-y-4">
@@ -159,20 +241,29 @@ const Reports = () => {
             </CardHeader>
             <CardContent className="h-[400px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart
+                <LineChart
                   data={monthlyRevenue}
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
+                  <XAxis dataKey="month" />
                   <YAxis 
                     tickFormatter={(value) => `KSh ${value / 1000}k`}
                   />
                   <Tooltip 
                     formatter={(value) => [`KSh ${Number(value).toLocaleString()}`, 'Amount']}
                   />
-                  <Bar dataKey="amount" fill="#8884d8" name="Revenue" />
-                </BarChart>
+                  <Legend />
+                  <Line 
+                    type="monotone" 
+                    dataKey="amount" 
+                    stroke="#8884d8" 
+                    name="Revenue" 
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                    activeDot={{ r: 8 }}
+                  />
+                </LineChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
@@ -225,9 +316,52 @@ const Reports = () => {
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value) => [value, 'Payments']} />
+                  <Tooltip formatter={(value) => [`KSh ${Number(value).toLocaleString()}`, 'Amount']} />
                 </PieChart>
               </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="details" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Payment Details</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Tenant</TableHead>
+                      <TableHead>Property</TableHead>
+                      <TableHead>Amount</TableHead>
+                      <TableHead>Method</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {payments.slice(0, 10).map((payment) => {
+                      const tenant = tenants.find(t => t.id === payment.tenantId);
+                      const property = properties.find(p => p.id === payment.propertyId);
+                      
+                      return (
+                        <TableRow key={payment.id}>
+                          <TableCell>{format(new Date(payment.date), 'MMM dd, yyyy')}</TableCell>
+                          <TableCell className="font-medium">
+                            {tenant ? `${tenant.firstName} ${tenant.lastName}` : 'Unknown'}
+                          </TableCell>
+                          <TableCell>{property?.name || 'Unknown'}</TableCell>
+                          <TableCell className="font-medium">KSh {payment.amount.toLocaleString()}</TableCell>
+                          <TableCell>
+                            <PaymentMethodBadge method={payment.method} showIcon={true} />
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
