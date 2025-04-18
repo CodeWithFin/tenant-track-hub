@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,13 +5,32 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import { maintenanceRequests, getTenantById, getPropertyById } from "@/lib/data";
+import { maintenanceRequests, getTenantById, getPropertyById, updateMaintenanceStatus } from "@/lib/data";
 import { Plus, Search } from "lucide-react";
+import { MaintenanceRequestDialog } from "@/components/maintenance/MaintenanceRequestDialog";
+import { useToast } from "@/hooks/use-toast";
+import { MaintenanceRequest } from "@/types";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { properties, tenants } from "@/lib/data";
 
 const Maintenance = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
+  const { toast } = useToast();
+
+  const handleStatusUpdate = (request: MaintenanceRequest, newStatus: MaintenanceRequest['status']) => {
+    updateMaintenanceStatus(request.id, newStatus);
+    toast({
+      title: "Status Updated",
+      description: `Request status changed to ${newStatus}`,
+    });
+  };
   
   const filteredRequests = maintenanceRequests.filter(
     (request) => {
@@ -67,10 +85,10 @@ const Maintenance = () => {
           <h1 className="text-2xl font-bold tracking-tight">Maintenance</h1>
           <p className="text-muted-foreground">Manage property maintenance requests.</p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          New Request
-        </Button>
+        <MaintenanceRequestDialog 
+          properties={properties.map(p => ({ id: p.id, name: p.name }))}
+          tenants={tenants.map(t => ({ id: t.id, firstName: t.firstName, lastName: t.lastName }))}
+        />
       </div>
       
       <div className="flex flex-col gap-4 md:flex-row">
@@ -121,6 +139,7 @@ const Maintenance = () => {
               <TableHead>Reported</TableHead>
               <TableHead>Priority</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -143,13 +162,33 @@ const Maintenance = () => {
                   <TableCell>{format(new Date(request.dateReported), 'MMM dd, yyyy')}</TableCell>
                   <TableCell>{getPriorityBadge(request.priority)}</TableCell>
                   <TableCell>{getStatusBadge(request.status)}</TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          Update Status
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem onClick={() => handleStatusUpdate(request, 'pending')}>
+                          Mark as Pending
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleStatusUpdate(request, 'in-progress')}>
+                          Mark as In Progress
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleStatusUpdate(request, 'completed')}>
+                          Mark as Completed
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
                 </TableRow>
               );
             })}
             
             {filteredRequests.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground py-6">
+                <TableCell colSpan={7} className="text-center text-muted-foreground py-6">
                   No maintenance requests found matching your search.
                 </TableCell>
               </TableRow>

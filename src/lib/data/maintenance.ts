@@ -59,3 +59,12 @@ export const addMaintenanceRequest = (request: Omit<MaintenanceRequest, 'id'>): 
   maintenanceRequests.push(newRequest);
   return newRequest;
 };
+
+export const updateMaintenanceStatus = (id: string, status: MaintenanceRequest['status']): MaintenanceRequest | undefined => {
+  const request = maintenanceRequests.find(r => r.id === id);
+  if (request) {
+    request.status = status;
+  }
+  return request;
+};
+
