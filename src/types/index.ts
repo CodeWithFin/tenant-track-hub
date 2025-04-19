@@ -73,7 +73,31 @@ export interface Receipt {
   downloadUrl?: string;
 }
 
-// Extended badge variants for different statuses
+export interface Lease {
+  id: string;
+  tenantId: string;
+  propertyId: string;
+  unitNumber: string;
+  startDate: string;
+  endDate: string;
+  rentAmount: number;
+  securityDeposit: number;
+  status: 'active' | 'expired' | 'terminated' | 'pending_renewal';
+  documents: LeaseDocument[];
+  terms: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LeaseDocument {
+  id: string;
+  leaseId: string;
+  name: string;
+  type: 'agreement' | 'addendum' | 'notice' | 'other';
+  uploadDate: string;
+  fileUrl?: string;
+}
+
 export type BadgeVariant = 
   | 'default'
   | 'secondary'

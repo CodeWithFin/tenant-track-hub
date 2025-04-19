@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import { NavLink } from "react-router-dom"
 import { cn } from "@/lib/utils"
@@ -10,7 +9,8 @@ import {
   Users, 
   Wallet, 
   FileText,
-  Calculator
+  Calculator,
+  ScrollText
 } from "lucide-react"
 
 import {
@@ -79,6 +79,20 @@ export function AppSidebar() {
                   >
                     <Users className="h-4 w-4" />
                     <span>Tenants</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Leases">
+                  <NavLink
+                    to="/leases"
+                    className={({ isActive }) =>
+                      cn(isActive && "bg-sidebar-accent text-sidebar-accent-foreground")
+                    }
+                  >
+                    <ScrollText className="h-4 w-4" />
+                    <span>Leases</span>
                   </NavLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -15,6 +15,7 @@ import Payments from "./pages/Payments";
 import Maintenance from "./pages/Maintenance";
 import Receipts from "./pages/Receipts";
 import Reports from "./pages/Reports";
+import Leases from "./pages/Leases";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Calculations from "./pages/Calculations";
@@ -58,6 +59,13 @@ function App() {
                   <ProtectedRoute>
                     <AppLayout>
                       <Tenants />
+                    </AppLayout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/leases" element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <Leases />
                     </AppLayout>
                   </ProtectedRoute>
                 } />
