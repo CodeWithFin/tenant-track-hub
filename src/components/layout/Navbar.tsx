@@ -33,7 +33,7 @@ const Navbar = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 rounded-xl p-1 shadow-lg border-border">
               <div className="px-3 py-2 text-sm font-medium">
-                {user?.name || 'User'}
+                {user?.email?.split('@')[0] || 'User'}
               </div>
               <div className="px-3 py-1 text-xs text-muted-foreground mb-1">
                 {user?.email || 'user@example.com'}
