@@ -19,6 +19,7 @@ import Leases from "./pages/Leases";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Calculations from "./pages/Calculations";
+import Auth from "./pages/Auth";
 
 const queryClient = new QueryClient();
 
@@ -32,8 +33,9 @@ function App() {
             <Sonner />
             <BrowserRouter>
               <Routes>
-                <Route path="/" element={<Navigate to="/login" replace />} />
+                <Route path="/" element={<Navigate to="/auth" replace />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/auth" element={<Auth />} />
                 <Route path="/dashboard" element={
                   <ProtectedRoute>
                     <AppLayout>

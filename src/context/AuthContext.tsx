@@ -1,79 +1,89 @@
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-
-type User = {
-  id: string;
-  email: string;
-  name: string;
-  role: "admin" | "manager" | "user";
-};
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import type { Session, User } from "@supabase/supabase-js";
 
 interface AuthContextType {
   user: User | null;
+  session: Session | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  login: (email: string, password: string) => Promise<{ error?: string }>;
+  signup: (email: string, password: string) => Promise<{ error?: string }>;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
-const defaultContext: AuthContextType = {
+const AuthContext = createContext<AuthContextType>({
   user: null,
+  session: null,
   loading: true,
-  login: async () => {},
-  logout: () => {},
+  login: async () => ({}),
+  signup: async () => ({}),
+  logout: async () => {},
   isAuthenticated: false,
-};
-
-const AuthContext = createContext<AuthContextType>(defaultContext);
+});
 
 export const useAuth = () => useContext(AuthContext);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Check if user is logged in on initial load
+  // Subscribe to auth state changes immediately
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
+    const { data: authListener } = supabase.auth.onAuthStateChange((_, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+    });
+
+    // Get initial session
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setUser(data.session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
-  // Mock login function - this would be replaced with real authentication
   const login = async (email: string, password: string) => {
-    // For demo purposes, we're using a simple check
-    if (email && password.length > 3) {
-      // Mock user data - in a real app, this would come from an API
-      const userData: User = {
-        id: "user-001",
-        email: email,
-        name: email.split('@')[0],
-        role: "admin",
-      };
-      
-      // Save to localStorage for persistence
-      localStorage.setItem("user", JSON.stringify(userData));
-      setUser(userData);
-      return;
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      return { error: error.message ?? "Login failed" };
     }
-    
-    throw new Error("Invalid credentials");
+    return {};
   };
 
-  const logout = () => {
-    localStorage.removeItem("user");
+  const signup = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) {
+      return { error: error.message ?? "Sign up failed" };
+    }
+    return {};
+  };
+
+  const logout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
+    setSession(null);
   };
 
-  const value = {
-    user,
-    loading,
-    login,
-    logout,
-    isAuthenticated: !!user,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        session,
+        loading,
+        login,
+        signup,
+        logout,
+        isAuthenticated: !!user,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
