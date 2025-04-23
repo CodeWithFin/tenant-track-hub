@@ -49,6 +49,89 @@ export const leases: Lease[] = [
     terms: "Standard 12-month lease agreement",
     createdAt: "2023-02-10",
     updatedAt: "2023-02-10"
+  },
+  {
+    id: "lease-003",
+    tenantId: "ten-003",
+    propertyId: "prop-002",
+    unitNumber: "A1",
+    startDate: "2023-03-01",
+    endDate: "2023-09-01",
+    rentAmount: 65000,
+    securityDeposit: 65000,
+    status: "expired",
+    documents: [
+      {
+        id: "doc-003",
+        leaseId: "lease-003",
+        name: "6-Month Lease Agreement",
+        type: "agreement",
+        uploadDate: "2023-02-20"
+      }
+    ],
+    terms: "Short-term 6-month lease agreement",
+    createdAt: "2023-02-20",
+    updatedAt: "2023-02-20"
+  },
+  {
+    id: "lease-004",
+    tenantId: "ten-004",
+    propertyId: "prop-003",
+    unitNumber: "B2",
+    startDate: "2023-05-15",
+    endDate: "2024-05-15",
+    rentAmount: 95000,
+    securityDeposit: 95000,
+    status: "active",
+    documents: [
+      {
+        id: "doc-004",
+        leaseId: "lease-004",
+        name: "Commercial Lease Agreement",
+        type: "agreement",
+        uploadDate: "2023-05-10"
+      },
+      {
+        id: "doc-005",
+        leaseId: "lease-004",
+        name: "Addendum - Parking",
+        type: "addendum",
+        uploadDate: "2023-05-12"
+      }
+    ],
+    terms: "Commercial space lease with parking addendum",
+    createdAt: "2023-05-10",
+    updatedAt: "2023-05-12"
+  },
+  {
+    id: "lease-005",
+    tenantId: "ten-005",
+    propertyId: "prop-004",
+    unitNumber: "C3",
+    startDate: "2023-01-01",
+    endDate: "2024-01-01",
+    rentAmount: 120000,
+    securityDeposit: 120000,
+    status: "terminated",
+    documents: [
+      {
+        id: "doc-006",
+        leaseId: "lease-005",
+        name: "Residential Lease Agreement",
+        type: "agreement",
+        uploadDate: "2022-12-20"
+      },
+      {
+        id: "doc-007",
+        leaseId: "lease-005",
+        name: "Termination Notice",
+        type: "notice",
+        uploadDate: "2023-07-15"
+      }
+    ],
+    terms: "Standard 12-month lease agreement - terminated early due to tenant relocation",
+    createdAt: "2022-12-20",
+    updatedAt: "2023-07-15"
   }
 ];
 
