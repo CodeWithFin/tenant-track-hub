@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session, User } from "@supabase/supabase-js";
@@ -138,14 +139,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const verifyEmail = async () => {
+    if (!user?.email) {
+      toast.error('No email address found');
+      return { error: 'No email address found' };
+    }
+
     const { error } = await supabase.auth.resend({
       type: 'signup',
-      email: user?.email,
+      email: user.email,
     });
+
     if (error) {
       toast.error('Failed to send verification email');
       return { error: error.message };
     }
+    
     toast.success('Verification email sent');
     return {};
   };
