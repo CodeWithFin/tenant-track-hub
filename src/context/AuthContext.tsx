@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session, User } from "@supabase/supabase-js";
@@ -139,7 +138,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const verifyEmail = async () => {
-    const { error } = await supabase.auth.resendOtp({
+    const { error } = await supabase.auth.resend({
       type: 'signup',
       email: user?.email,
     });
