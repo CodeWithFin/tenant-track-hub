@@ -139,7 +139,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const verifyEmail = async () => {
-    const { error } = await supabase.auth.resendEmailVerification();
+    const { error } = await supabase.auth.resendOtp({
+      type: 'signup',
+      email: user?.email,
+    });
     if (error) {
       toast.error('Failed to send verification email');
       return { error: error.message };
