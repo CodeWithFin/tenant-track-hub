@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import { payments, getTenantById, getPropertyById } from "@/lib/data";
-import { Plus, Search, Download, ArrowUpDown } from "lucide-react";
+import { payments, getTenantById, getPropertyById, tenants, properties } from "@/lib/data";
+import { Plus, Search, Download, FileDown } from "lucide-react";
+import { PaymentMethodBadge } from "@/components/payments/PaymentMethodBadge";
+import { exportPaymentsToCSV } from "@/utils/exportUtils";
 
 const Payments = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,19 +42,13 @@ const Payments = () => {
     }
   );
   
-  const getPaymentMethodBadge = (method: string) => {
-    switch (method) {
-      case "cash":
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Cash</Badge>;
-      case "m-pesa":
-        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">M-Pesa</Badge>;
-      case "bank transfer":
-        return <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">Bank Transfer</Badge>;
-      case "check":
-        return <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">Check</Badge>;
-      default:
-        return <Badge variant="outline">Other</Badge>;
-    }
+  const handleExportCSV = () => {
+    exportPaymentsToCSV(
+      filteredPayments,
+      tenants,
+      properties,
+      `payments_export_${format(new Date(), 'yyyy-MM-dd')}.csv`
+    );
   };
 
   return (
@@ -63,10 +58,16 @@ const Payments = () => {
           <h1 className="text-2xl font-bold tracking-tight">Payments</h1>
           <p className="text-muted-foreground">Track and manage tenant payments.</p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Record Payment
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleExportCSV}>
+            <FileDown className="h-4 w-4 mr-2" />
+            Export CSV
+          </Button>
+          <Button>
+            <Plus className="h-4 w-4 mr-2" />
+            Record Payment
+          </Button>
+        </div>
       </div>
       
       <div className="flex flex-col gap-4 md:flex-row">
@@ -139,7 +140,7 @@ const Payments = () => {
                   </TableCell>
                   <TableCell>{property?.name || 'Unknown'}</TableCell>
                   <TableCell className="font-medium">KSh {payment.amount.toLocaleString()}</TableCell>
-                  <TableCell>{getPaymentMethodBadge(payment.method)}</TableCell>
+                  <TableCell><PaymentMethodBadge method={payment.method} /></TableCell>
                   <TableCell>{payment.notes || '-'}</TableCell>
                   <TableCell className="text-right">
                     <Button variant="ghost" size="icon">
