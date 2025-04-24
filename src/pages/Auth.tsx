@@ -6,9 +6,10 @@ import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoginThemeToggle } from "@/components/theme/LoginThemeToggle";
+import { Link } from "react-router-dom";
 
 const Auth = () => {
-  const { user, loading, isAuthenticated, login, signup } = useAuth();
+  const { user, loading, isAuthenticated, login, signup, verifyEmail } = useAuth();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -44,6 +45,10 @@ const Auth = () => {
       else setMode("login");
     }
     setPending(false);
+  };
+
+  const handleVerifyEmail = async () => {
+    await verifyEmail();
   };
 
   return (
@@ -89,6 +94,16 @@ const Auth = () => {
                 required
               />
             </div>
+            {mode === "login" && (
+              <div className="text-sm text-right">
+                <Link 
+                  to="/reset-password" 
+                  className="text-primary hover:underline"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
+            )}
           </CardContent>
           <CardFooter className="flex flex-col gap-2">
             <Button className="w-full" type="submit" disabled={pending}>
@@ -100,18 +115,36 @@ const Auth = () => {
                 ? "Sign In"
                 : "Sign Up"}
             </Button>
+            {mode === "login" && user && !user.email_confirmed_at && (
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={handleVerifyEmail}
+                className="w-full mt-2"
+              >
+                Resend Verification Email
+              </Button>
+            )}
             <div className="text-center text-sm text-muted-foreground mt-1">
               {mode === "login" ? (
                 <>
                   Don&apos;t have an account?{" "}
-                  <button type="button" onClick={() => setMode("signup")} className="underline hover:text-primary">
+                  <button 
+                    type="button" 
+                    onClick={() => setMode("signup")} 
+                    className="underline hover:text-primary"
+                  >
                     Sign up
                   </button>
                 </>
               ) : (
                 <>
                   Already have an account?{" "}
-                  <button type="button" onClick={() => setMode("login")} className="underline hover:text-primary">
+                  <button 
+                    type="button" 
+                    onClick={() => setMode("login")} 
+                    className="underline hover:text-primary"
+                  >
                     Sign in
                   </button>
                 </>

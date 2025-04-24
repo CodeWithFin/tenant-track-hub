@@ -7,18 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { User, Mail, Camera } from "lucide-react";
-
-interface Profile {
-  id: string;
-  full_name: string | null;
-  avatar_url: string | null;
-}
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Profile = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profile, setProfile] = useState<{
+    full_name: string | null;
+    avatar_url: string | null;
+  }>({ full_name: null, avatar_url: null });
   const [fullName, setFullName] = useState("");
 
   useEffect(() => {
@@ -31,7 +29,7 @@ const Profile = () => {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('full_name, avatar_url')
         .eq('id', user.id)
         .single();
 
@@ -82,13 +80,13 @@ const Profile = () => {
 
       if (uploadError) throw uploadError;
 
-      const { data: urlData } = await supabase.storage
+      const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
 
       const { error: updateError } = await supabase
         .from('profiles')
-        .update({ avatar_url: urlData.publicUrl })
+        .update({ avatar_url: publicUrl })
         .eq('id', user?.id);
 
       if (updateError) throw updateError;
@@ -107,80 +105,70 @@ const Profile = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-4 space-y-8">
-      <div className="space-y-2">
-        <h2 className="text-3xl font-bold">Profile Settings</h2>
-        <p className="text-muted-foreground">
-          Manage your account settings and profile information
-        </p>
-      </div>
-
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <Avatar className="w-20 h-20">
-            <AvatarImage src={profile?.avatar_url || undefined} />
-            <AvatarFallback>
-              <User className="w-8 h-8" />
-            </AvatarFallback>
-          </Avatar>
-          <div className="space-y-2">
+    <div className="max-w-2xl mx-auto p-6 space-y-8">
+      <Card>
+        <CardHeader>
+          <CardTitle>Profile Settings</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-center gap-6">
+            <Avatar className="w-24 h-24">
+              <AvatarImage src={profile.avatar_url || undefined} />
+              <AvatarFallback>
+                <User className="w-10 h-10" />
+              </AvatarFallback>
+            </Avatar>
             <div>
               <label htmlFor="avatar" className="cursor-pointer">
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" className="relative">
-                    <Camera className="w-4 h-4 mr-2" />
-                    Change Avatar
-                    <input
-                      type="file"
-                      id="avatar"
-                      accept="image/*"
-                      onChange={uploadAvatar}
-                      disabled={uploading}
-                      className="absolute inset-0 w-full opacity-0 cursor-pointer"
-                    />
-                  </Button>
-                </div>
+                <Button variant="outline" className="relative">
+                  <Camera className="w-4 h-4 mr-2" />
+                  Change Avatar
+                  <input
+                    type="file"
+                    id="avatar"
+                    accept="image/*"
+                    onChange={uploadAvatar}
+                    disabled={uploading}
+                    className="absolute inset-0 w-full opacity-0 cursor-pointer"
+                  />
+                </Button>
               </label>
+              {uploading && <p className="text-sm mt-2">Uploading...</p>}
             </div>
-            {uploading && <p className="text-sm">Uploading...</p>}
           </div>
-        </div>
 
-        <div className="space-y-4">
-          <div>
-            <label htmlFor="email" className="text-sm font-medium">
-              Email
-            </label>
-            <div className="flex gap-2 items-center mt-1">
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="email" className="text-sm font-medium block mb-2">
+                Email
+              </label>
               <Input
                 id="email"
                 type="email"
-                value={user?.email}
+                value={user?.email || ''}
                 disabled
                 className="bg-muted"
               />
-              <Mail className="w-5 h-5 text-muted-foreground" />
             </div>
-          </div>
 
-          <div>
-            <label htmlFor="fullName" className="text-sm font-medium">
-              Full Name
-            </label>
-            <Input
-              id="fullName"
-              type="text"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="mt-1"
-            />
-          </div>
+            <div>
+              <label htmlFor="fullName" className="text-sm font-medium block mb-2">
+                Full Name
+              </label>
+              <Input
+                id="fullName"
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
+            </div>
 
-          <Button onClick={updateProfile}>
-            Save Changes
-          </Button>
-        </div>
-      </div>
+            <Button onClick={updateProfile} className="mt-4">
+              Save Changes
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

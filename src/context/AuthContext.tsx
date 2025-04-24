@@ -14,6 +14,8 @@ interface AuthContextType {
   logout: () => Promise<void>;
   isAuthenticated: boolean;
   resetPassword: (email: string) => Promise<{ error?: string }>;
+  updatePassword: (newPassword: string) => Promise<{ error?: string }>;
+  verifyEmail: () => Promise<{ error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -26,6 +28,8 @@ const AuthContext = createContext<AuthContextType>({
   logout: async () => {},
   isAuthenticated: false,
   resetPassword: async () => ({}),
+  updatePassword: async () => ({}),
+  verifyEmail: async () => ({}),
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -37,7 +41,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const fetchUserRole = async (userId: string) => {
+    const checkUserRole = async (userId: string) => {
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
@@ -52,13 +56,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setIsAdmin(data?.role === 'admin');
     };
 
-    // Subscribe to auth state changes
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        fetchUserRole(session.user.id);
+        checkUserRole(session.user.id);
       } else {
         setIsAdmin(false);
       }
@@ -74,7 +77,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setSession(data.session);
       setUser(data.session?.user ?? null);
       if (data.session?.user) {
-        fetchUserRole(data.session.user.id);
+        checkUserRole(data.session.user.id);
       }
       setLoading(false);
     });
@@ -116,11 +119,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const resetPassword = async (email: string) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/reset-password`,
+      redirectTo: `${window.location.origin}/update-password`,
     });
     if (error) {
       return { error: error.message };
     }
+    toast.success('Password reset email sent');
+    return {};
+  };
+
+  const updatePassword = async (newPassword: string) => {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) {
+      toast.error('Failed to update password');
+      return { error: error.message };
+    }
+    toast.success('Password updated successfully');
+    return {};
+  };
+
+  const verifyEmail = async () => {
+    const { error } = await supabase.auth.resendEmailVerification();
+    if (error) {
+      toast.error('Failed to send verification email');
+      return { error: error.message };
+    }
+    toast.success('Verification email sent');
     return {};
   };
 
@@ -136,6 +160,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         logout,
         isAuthenticated: !!user,
         resetPassword,
+        updatePassword,
+        verifyEmail,
       }}
     >
       {children}

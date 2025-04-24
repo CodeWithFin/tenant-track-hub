@@ -22,6 +22,7 @@ import Calculations from "./pages/Calculations";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import AdminPanel from "./pages/AdminPanel";
+import UpdatePassword from "./pages/UpdatePassword";
 
 const queryClient = new QueryClient();
 
@@ -119,6 +120,13 @@ function App() {
                   <ProtectedRoute>
                     <AppLayout>
                       <AdminPanel />
+                    </AppLayout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/update-password" element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <UpdatePassword />
                     </AppLayout>
                   </ProtectedRoute>
                 } />
