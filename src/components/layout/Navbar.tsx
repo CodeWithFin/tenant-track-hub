@@ -5,9 +5,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
@@ -38,14 +40,16 @@ const Navbar = () => {
               <div className="px-3 py-1 text-xs text-muted-foreground mb-1">
                 {user?.email || 'user@example.com'}
               </div>
-              <DropdownMenuItem className="py-2 rounded-lg cursor-pointer">
+              <DropdownMenuItem className="py-2 rounded-lg cursor-pointer" onClick={() => navigate('/profile')}>
                 <User className="mr-2 h-4 w-4" />
                 <span>My Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="py-2 rounded-lg cursor-pointer">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
-              </DropdownMenuItem>
+              {isAdmin && (
+                <DropdownMenuItem className="py-2 rounded-lg cursor-pointer" onClick={() => navigate('/admin')}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Admin Panel</span>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem className="py-2 text-destructive rounded-lg cursor-pointer" onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Logout</span>

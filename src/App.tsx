@@ -20,6 +20,8 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Calculations from "./pages/Calculations";
 import Auth from "./pages/Auth";
+import Profile from "./pages/Profile";
+import AdminPanel from "./pages/AdminPanel";
 
 const queryClient = new QueryClient();
 
@@ -103,6 +105,20 @@ function App() {
                   <ProtectedRoute>
                     <AppLayout>
                       <Calculations />
+                    </AppLayout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/profile" element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <Profile />
+                    </AppLayout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin" element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <AdminPanel />
                     </AppLayout>
                   </ProtectedRoute>
                 } />
