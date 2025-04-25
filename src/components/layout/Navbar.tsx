@@ -1,4 +1,3 @@
-
 import { User, Bell, Settings, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -6,14 +5,25 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { useNavigate } from "react-router-dom";
+import { showNotification, NotificationTypes } from "@/lib/utils/notificationUtils";
+import { useState } from "react";
 
 const Navbar = () => {
   const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const [notifications, setNotifications] = useState([
+    { id: '1', message: NotificationTypes.RENT_DUE_SOON, date: new Date() },
+    { id: '2', message: NotificationTypes.MAINTENANCE_REQUEST_CREATED, date: new Date() }
+  ]);
 
   const handleLogout = () => {
     logout();
     toast.success("Logged out successfully");
+  };
+
+  const handleNotificationClick = (notification: { id: string, message: string }) => {
+    showNotification(notification.message, 'default');
+    setNotifications(prev => prev.filter(n => n.id !== notification.id));
   };
 
   return (
@@ -22,6 +32,36 @@ const Navbar = () => {
         <div className="flex-1"></div>
         <div className="flex items-center gap-3">
           <ThemeToggle />
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-muted-foreground rounded-full relative">
+                <Bell className="h-5 w-5" />
+                {notifications.length > 0 && (
+                  <span className="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full text-white text-[8px] flex items-center justify-center">
+                    {notifications.length}
+                  </span>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-64">
+              {notifications.length === 0 ? (
+                <div className="p-4 text-center text-muted-foreground">
+                  No new notifications
+                </div>
+              ) : (
+                notifications.map(notification => (
+                  <DropdownMenuItem 
+                    key={notification.id} 
+                    onSelect={() => handleNotificationClick(notification)}
+                    className="cursor-pointer"
+                  >
+                    {notification.message}
+                  </DropdownMenuItem>
+                ))
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           <Button variant="ghost" size="icon" className="text-muted-foreground rounded-full">
             <Bell className="h-5 w-5" />
