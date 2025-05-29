@@ -10,7 +10,10 @@ import {
   Wallet, 
   FileText,
   Calculator,
-  ScrollText
+  ScrollText,
+  MessageSquare,
+  Wrench,
+  Award
 } from "lucide-react"
 
 import {
@@ -135,6 +138,48 @@ export function AppSidebar() {
                   >
                     <Calculator className="h-4 w-4" />
                     <span>Calculations</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Communication Hub">
+                  <NavLink
+                    to="/communication"
+                    className={({ isActive }) =>
+                      cn(isActive && "bg-sidebar-accent text-sidebar-accent-foreground")
+                    }
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    <span>Communication</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Maintenance">
+                  <NavLink
+                    to="/maintenance"
+                    className={({ isActive }) =>
+                      cn(isActive && "bg-sidebar-accent text-sidebar-accent-foreground")
+                    }
+                  >
+                    <Wrench className="h-4 w-4" />
+                    <span>Maintenance</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip="Rewards Program">
+                  <NavLink
+                    to="/rewards"
+                    className={({ isActive }) =>
+                      cn(isActive && "bg-sidebar-accent text-sidebar-accent-foreground")
+                    }
+                  >
+                    <Award className="h-4 w-4" />
+                    <span>Rewards</span>
                   </NavLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>

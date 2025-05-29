@@ -23,6 +23,8 @@ import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import AdminPanel from "./pages/AdminPanel";
 import UpdatePassword from "./pages/UpdatePassword";
+import Communication from "./pages/Communication";
+import Rewards from "./pages/Rewards";
 
 const queryClient = new QueryClient();
 
@@ -127,6 +129,20 @@ function App() {
                   <ProtectedRoute>
                     <AppLayout>
                       <UpdatePassword />
+                    </AppLayout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/communication" element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <Communication />
+                    </AppLayout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/rewards" element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <Rewards />
                     </AppLayout>
                   </ProtectedRoute>
                 } />
